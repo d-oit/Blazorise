@@ -1,15 +1,14 @@
 ﻿#region Using directives
+
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Blazorise.Utils;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-#endregion
+
+#endregion Using directives
 
 namespace Blazorise
 {
@@ -28,7 +27,9 @@ namespace Blazorise
         // taken from https://github.com/aspnet/AspNetCore/issues/11159
         private DotNetObjectReference<NumericEditAdapter> dotNetObjectRef;
 
-        #endregion
+        protected ElementReference input;
+
+        #endregion Members
 
         #region Methods
 
@@ -93,34 +94,89 @@ namespace Blazorise
             {
                 case null:
                     return null;
+
                 case byte @byte:
                     return Converters.FormatValue( @byte, CurrentCultureInfo );
+
                 case short @short:
                     return Converters.FormatValue( @short, CurrentCultureInfo );
+
                 case int @int:
                     return Converters.FormatValue( @int, CurrentCultureInfo );
+
                 case long @long:
                     return Converters.FormatValue( @long, CurrentCultureInfo );
+
                 case float @float:
                     return Converters.FormatValue( @float, CurrentCultureInfo );
+
                 case double @double:
                     return Converters.FormatValue( @double, CurrentCultureInfo );
+
                 case decimal @decimal:
                     return Converters.FormatValue( @decimal, CurrentCultureInfo );
+
                 case sbyte @sbyte:
                     return Converters.FormatValue( @sbyte, CurrentCultureInfo );
+
                 case ushort @ushort:
                     return Converters.FormatValue( @ushort, CurrentCultureInfo );
+
                 case uint @uint:
                     return Converters.FormatValue( @uint, CurrentCultureInfo );
+
                 case ulong @ulong:
                     return Converters.FormatValue( @ulong, CurrentCultureInfo );
+
                 default:
                     throw new InvalidOperationException( $"Unsupported type {value.GetType()}" );
             }
         }
 
-        #endregion
+        private async System.Threading.Tasks.Task UpdateValueWithStep( bool stepUp )
+        {
+            if ( Disabled || ReadOnly )
+            {
+                return;
+            }
+
+            var step = Step.GetValueOrDefault( 1 );
+
+            var valueToUpdate = Value != null ? Convert.ChangeType( Value, typeof( decimal ) ) : (decimal)Convert.ChangeType( default( decimal ), typeof( decimal ) );
+
+            var newValue = ( (decimal)Convert.ChangeType( valueToUpdate, typeof( decimal ) ) ) + (decimal)Convert.ChangeType( stepUp ? step : -step, typeof( decimal ) );
+
+            if ( object.Equals( Value, newValue ) )
+            {
+                return;
+            }
+
+            var hasMin = Converters.TryChangeType<decimal>( Min, out var min );
+            if ( !hasMin )
+            {
+                min = decimal.MinValue;
+            }
+
+            var hasMax = Converters.TryChangeType<decimal>( Max, out var max );
+
+            if ( !hasMax )
+            {
+                max = decimal.MaxValue;
+            }
+
+            if ( newValue > max || newValue < min )
+            {
+                return;
+            }
+
+            if ( Converters.TryChangeType<string>( newValue, out var newStringValue ) )
+            {
+                await SetValue( newStringValue );
+                StateHasChanged();
+            }
+        }
+
+        #endregion Methods
 
         #region Properties
 
@@ -201,6 +257,8 @@ namespace Blazorise
         /// <see cref="https://www.w3schools.com/tags/att_input_size.asp"/>
         [Parameter] public int? VisibleCharacters { get; set; }
 
-        #endregion
+        [Parameter] public bool ShowSpinner { get; set; }
+
+        #endregion Properties
     }
 }

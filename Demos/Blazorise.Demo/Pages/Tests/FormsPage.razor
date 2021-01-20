@@ -126,7 +126,7 @@
                 <Field Horizontal="true">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Number</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <NumericEdit TValue="decimal?" />
+                        <NumericEdit TValue="decimal?" ShowSpinner="true" Value="@DecimalNumber" Min="0" Max="34"  />
                     </FieldBody>
                 </Field>
                 <Field Horizontal="true">
@@ -522,4 +522,6 @@
     //{
     //    Console.WriteLine( $"Name: {e.File.Name} Position: {e.Position} Data: {Convert.ToBase64String( e.Data )}" );
     //}
+
+    decimal? DecimalNumber;
 }

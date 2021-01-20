@@ -1,9 +1,20 @@
 ﻿@* This has to be name TextEdit because Razor(not Blazor) still doesn't support case sensitive components. *@
 @typeparam TValue
 @inherits Blazorise.BaseTextInput<TValue>
-@if ( !HasCustomRegistration )
+@if (!HasCustomRegistration)
 {
-    <input @ref="ElementRef" id="@ElementId" inputmode="numeric" class="@ClassNames" style="@StyleNames" placeholder="@Placeholder" disabled="@Disabled" readonly="@ReadOnly" size="@VisibleCharacters" step="@Step" pattern="@Pattern" value="@CurrentValueAsString" @onchange="@OnChangeHandler" @oninput="@OnInputHandler" @onfocus="@OnFocus" @onfocusin="@FocusIn" @onfocusout="@FocusOut" @attributes="@Attributes" />
+    @if (ShowSpinner)
+    {
+        <span @ref="@ElementRef" class="b-input-group b-spinner" id="@ElementId">
+            <input @ref="@input" id="@ElementId" inputmode="numeric" class="b-input-spinner @ClassNames" style="@StyleNames" placeholder="@Placeholder" disabled="@Disabled" readonly="@ReadOnly" size="@VisibleCharacters" step="@Step" pattern="@Pattern" value="@CurrentValueAsString" @onchange="@OnChangeHandler" @oninput="@OnInputHandler" @onfocus="@OnFocus" @onfocusin="@FocusIn" @onfocusout="@FocusOut" @attributes="@Attributes" />
+            <Button Class="b-spinner-button b-spinner-up" Clicked="@((args) => UpdateValueWithStep(true))" tabindex="-1"><Icon Name="IconName.SortUp"></Icon></Button>
+            <Button Class="b-spinner-button b-spinner-down" Clicked="@((args) => UpdateValueWithStep(false))" tabindex="-1"><Icon Name="IconName.SortDown"></Icon></Button>
+        </span>
+    }
+    else
+    {
+        <input @ref="ElementRef" id="@ElementId" inputmode="numeric" class="@ClassNames" style="@StyleNames" placeholder="@Placeholder" disabled="@Disabled" readonly="@ReadOnly" size="@VisibleCharacters" step="@Step" pattern="@Pattern" value="@CurrentValueAsString" @onchange="@OnChangeHandler" @oninput="@OnInputHandler" @onfocus="@OnFocus" @onfocusin="@FocusIn" @onfocusout="@FocusOut" @attributes="@Attributes" />
+    }
     @ChildContent
     @Feedback
 }
